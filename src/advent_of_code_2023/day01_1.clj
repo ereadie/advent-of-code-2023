@@ -4,8 +4,7 @@
 (defn parse-digits-sum [line]
   (let [digit-pattern #"\d"
         digit-matches (re-seq digit-pattern line)]
-    (let [result (str (first digit-matches) (last digit-matches))]
-      (Integer/parseInt result))))
+    (Integer/parseInt  (str (first digit-matches) (last digit-matches)))))
 
 (defn calculate-total-sum [lines]
   (reduce (fn [total line]
@@ -18,3 +17,5 @@
         lines (string/split input #"\r?\n")
         total-sum (calculate-total-sum lines)]
     (println "Total sum of first and last digits:" total-sum)))
+
+
