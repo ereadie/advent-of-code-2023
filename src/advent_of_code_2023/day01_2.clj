@@ -12,29 +12,30 @@
     "seven" 7
     "eight" 8
     "nine" 9
-    (Integer/parseInt input)))
+    (try
+      (Integer/parseInt input)
+      (catch NumberFormatException e
+        0))))
 
-(defn parse-digits-sum [line]
+(defn parse-concatenated-digits
+  [line]
   (let [digit-pattern #"\d|one|two|three|four|five|six|seven|eight|nine"
         digit-matches (re-seq digit-pattern line)]
-    (println "Line: " line)
-    (println "Digit Pattern: " digit-pattern)
-    (println "Digit Matches: " digit-matches)
-    (println "First Digit Match: " (first digit-matches))
-    (println "Last Digit Match: " (last digit-matches))
-    (println "Parsed First Digit Match: " (parse-match (first digit-matches)))
-    (println "Parsed Last Digit Match: " (parse-match (last digit-matches)))
-    (Integer/parseInt (str (parse-match (first digit-matches))
-                           (parse-match (last digit-matches))))))
+    (if (seq digit-matches)
+      (let [first-digit (first digit-matches)
+            last-digit (or (last digit-matches) first-digit)]
+        (Integer/parseInt (str (parse-match first-digit) (parse-match last-digit))))
+      (Integer/parseInt "0"))))
 
-(defn calculate-total-sum [lines]
-  (reduce (fn [total line]
-            (+ total (parse-digits-sum line)))
-          0
-          lines))
+(defn total-sum
+  [lines]
+  (reduce + (map parse-concatenated-digits lines)))
+
+(defn read-input-lines
+  [file-path]
+  (string/split (slurp file-path) #"\r?\n"))
 
 (defn -main [& args]
-  (let [input (slurp "./data/day01_1.txt")
-        lines (string/split input #"\r?\n")
-        total-sum (calculate-total-sum lines)]
-    (println "Total sum of first and last digits:" total-sum)))
+  (let [lines (read-input-lines "./data/day01_1.txt")
+        total (total-sum lines)]
+    (println "Total sum of concatenated first and last digits:" total)))
