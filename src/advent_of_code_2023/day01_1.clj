@@ -1,21 +1,25 @@
 (ns advent-of-code-2023.day01-1
   (:require [clojure.string :as string]))
 
-(defn parse-digits-sum [line]
+(defn parse-concatenated-digits
+  [line]
   (let [digit-pattern #"\d"
         digit-matches (re-seq digit-pattern line)]
-    (Integer/parseInt  (str (first digit-matches) (last digit-matches)))))
+    (if (seq digit-matches)
+      (let [first-digit (first digit-matches)
+            last-digit (or (last digit-matches) first-digit)]
+        (Integer/parseInt (str first-digit last-digit)))
+      0)))
 
-(defn calculate-total-sum [lines]
-  (reduce (fn [total line]
-            (+ total (parse-digits-sum line)))
-          0
-          lines))
+(defn total-sum
+  [lines]
+  (reduce + (map parse-concatenated-digits lines)))
+
+(defn read-input-lines
+  [file-path]
+  (string/split (slurp file-path) #"\r?\n"))
 
 (defn -main [& args]
-  (let [input (slurp "./data/day01_1.txt")
-        lines (string/split input #"\r?\n")
-        total-sum (calculate-total-sum lines)]
-    (println "Total sum of first and last digits:" total-sum)))
-
-
+  (let [lines (read-input-lines "./data/day01_1.txt")
+        total (total-sum lines)]
+    (println "Total sum of concatenated first and last digits:" total)))
